@@ -1,0 +1,259 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <h4>User</h4>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button
+                            pButton
+                            pRipple
+                            label="Tambah"
+                            icon="pi pi-plus"
+                            class="p-button-success mr-2"
+                            (click)="btnAdd()"
+                        ></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+            <p-table
+                #dt1
+                [value]="users"
+                dataKey="id"
+                [loading]="loading"
+                [rowHover]="true"
+                styleClass="p-datatable-gridlines"
+                responsiveLayout="scroll"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex justify-content-between flex-column sm:flex-row"
+                    >
+                        <button
+                            pButton
+                            label="Clear"
+                            class="p-button-outlined mb-2"
+                            icon="pi pi-filter-slash"
+                            (click)="clear(dt1)"
+                        ></button>
+                        <span class="p-input-icon-left mb-2">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                #filter
+                                (input)="handleSearch($event)"
+                                placeholder="Cari..."
+                                class="w-full"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width: 12rem" pSortableColumn="nip">
+                            Nip <p-sortIcon field="nip"></p-sortIcon>
+                        </th>
+                        <th style="min-width: 12rem" pSortableColumn="name">
+                            Name <p-sortIcon field="name"></p-sortIcon>
+                        </th>
+                        <th style="min-width: 12rem" pSortableColumn="phone">
+                            No. Telp <p-sortIcon field="phone"></p-sortIcon>
+                        </th>
+                        <th
+                            style="min-width: 12rem"
+                            pSortableColumn="role.name"
+                        >
+                            Role <p-sortIcon field="role.name"></p-sortIcon>
+                        </th>
+                        <th style="min-width: 12rem">
+                            <div
+                                class="flex justify-content-between align-items-center"
+                            >
+                                Aksi
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user>
+                    <tr>
+                        <td>
+                            {{ user.nip }}
+                        </td>
+                        <td>
+                            {{ user.name }}
+                        </td>
+                        <td>
+                            {{ user.phone }}
+                        </td>
+                        <td>
+                            {{ user.role.name }}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="btnEdit(user.id)"
+                                ></button>
+                                <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-trash"
+                                    class="p-button-rounded p-button-warning"
+                                    (click)="btnDelete(user.id)"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8">No users found.</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="8">Loading users data. Please wait.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <p-paginator
+                (onPageChange)="onPageChange($event)"
+                [first]="first"
+                [rows]="rows"
+                [totalRecords]="totalRecords"
+                [rowsPerPageOptions]="[5, 10, 20]"
+            />
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    [(visible)]="userDialog"
+    [style]="{ width: '450px' }"
+    header="{{ titleDialog }}"
+    [modal]="true"
+    class="p-fluid"
+>
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="nip">NIP</label>
+            <input
+                type="text"
+                pInputText
+                id="nip"
+                [(ngModel)]="user.nip"
+                placeholder="NIP"
+                required
+                autofocus
+                [ngClass]="{ 'ng-invalid ng-dirty': nipValidation }"
+            />
+            <small class="ng-dirty ng-invalid" *ngIf="nipValidation">{{
+                nipValidation
+            }}</small>
+        </div>
+        <div class="field">
+            <label for="role">Role</label>
+            <p-dropdown
+                [(ngModel)]="user.roleId"
+                [options]="roles"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Pilih Role"
+                autofocus
+                [ngClass]="{ 'ng-invalid ng-dirty': roleIdValidation }"
+            >
+                <ng-template let-role pTemplate="item">
+                    {{ role.name }}
+                </ng-template>
+            </p-dropdown>
+            <small class="ng-dirty ng-invalid" *ngIf="roleIdValidation">{{
+                roleIdValidation
+            }}</small>
+        </div>
+        <div class="field">
+            <label for="name">Nama</label>
+            <input
+                type="text"
+                pInputText
+                id="name"
+                [(ngModel)]="user.name"
+                placeholder="Nama"
+                required
+                autofocus
+                [ngClass]="{ 'ng-invalid ng-dirty': nameValidation }"
+            />
+            <small class="ng-dirty ng-invalid" *ngIf="nameValidation">{{
+                nameValidation
+            }}</small>
+        </div>
+        <div class="field">
+            <label for="phone">No. Telp</label>
+            <input
+                type="text"
+                pInputText
+                id="phone"
+                [(ngModel)]="user.phone"
+                placeholder="No. Telp"
+                required
+                autofocus
+                [ngClass]="{ 'ng-invalid ng-dirty': phoneValidation }"
+            />
+            <small class="ng-dirty ng-invalid" *ngIf="phoneValidation">{{
+                phoneValidation
+            }}</small>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="btnHideDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Save"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="btnSave()"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="deleteUserDialog"
+    header="Konfirmasi"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+>
+    <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span>Apakah anda yakin akan menghapusnya?</span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            icon="pi pi-times"
+            class="p-button-text"
+            label="No"
+            (click)="deleteUserDialog = false"
+        ></button>
+        <button
+            pButton
+            pRipple
+            icon="pi pi-check"
+            class="p-button-text"
+            label="Yes"
+            (click)="btnConfirmDelete()"
+        ></button>
+    </ng-template>
+</p-dialog>

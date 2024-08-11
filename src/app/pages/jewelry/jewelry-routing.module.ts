@@ -10,4 +10,4 @@ import { ProductComponent } from './product/product.component';
     ])],
     exports: [RouterModule]
 })
-export class SetupRoutingModule { }
+export class JewelryRoutingModule { }

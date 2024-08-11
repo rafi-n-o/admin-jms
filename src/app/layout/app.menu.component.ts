@@ -22,10 +22,17 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
-                label: 'Setup',
+                label: 'Perhiasan',
                 items: [
-                    { label: 'Kategori', icon: 'pi pi-fw pi-circle-off', routerLink: ['/setup/category'] },
-                    { label: 'Produk', icon: 'pi pi-fw pi-circle-off', routerLink: ['/setup/product'] }
+                    { label: 'Kategori', icon: 'pi pi-fw pi-circle-off', routerLink: ['/jewelry/category'] },
+                    { label: 'Produk', icon: 'pi pi-fw pi-circle-off', routerLink: ['/jewelry/product'] }
+                ]
+            },
+            {
+                label: 'Setting',
+                items: [
+                    { label: 'User', icon: 'pi pi-fw pi-circle-off', routerLink: ['/setting/user'] },
+                    { label: 'Role', icon: 'pi pi-fw pi-circle-off', routerLink: ['/setting/role'] }
                 ]
             },
         ];

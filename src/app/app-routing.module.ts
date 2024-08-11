@@ -9,7 +9,8 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
             {
                 path: '', component: AppLayoutComponent,
                 children: [
-                    { path: 'setup', loadChildren: () => import('./pages/setup/setup.module').then(m => m.SetupModule) },
+                    { path: 'setting', loadChildren: () => import('./pages/setting/setting.module').then(m => m.SettingModule) },
+                    { path: 'jewelry', loadChildren: () => import('./pages/jewelry/jewelry.module').then(m => m.JewelryModule) },
                     { path: '', loadChildren: () => import('./pages/home/main/main.module').then(m => m.MainModule) },
                 ]
             },
