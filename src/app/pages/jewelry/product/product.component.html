@@ -1,8 +1,232 @@
 <div class="grid">
     <div class="col-12">
         <div class="card">
-            <h4>Product</h4>
-            <p>Product</p>
+            <h4>Produk</h4>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button
+                            pButton
+                            pRipple
+                            label="Tambah"
+                            icon="pi pi-plus"
+                            class="p-button-success mr-2"
+                            (click)="btnAdd()"
+                        ></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+            <p-table
+                #dt1
+                [value]="products"
+                dataKey="id"
+                [loading]="loading"
+                [rowHover]="true"
+                styleClass="p-datatable-gridlines"
+                responsiveLayout="scroll"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex justify-content-between flex-column sm:flex-row"
+                    >
+                        <button
+                            pButton
+                            label="Cari"
+                            class="p-button-outlined"
+                            icon="pi pi-search"
+                        ></button>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th
+                            style="min-width: 12rem"
+                            pSortableColumn="subcategory.category.name"
+                        >
+                            Kategori
+                            <p-sortIcon
+                                field="subcategory.category.name"
+                            ></p-sortIcon>
+                        </th>
+                        <th
+                            style="min-width: 12rem"
+                            pSortableColumn="subcategory.name"
+                        >
+                            Sub Kategori
+                            <p-sortIcon field="subcategory.name"></p-sortIcon>
+                        </th>
+                        <th style="min-width: 12rem" pSortableColumn="name">
+                            Nama <p-sortIcon field="name"></p-sortIcon>
+                        </th>
+                        <th style="min-width: 12rem">Aksi</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td>
+                            {{ product.subcategory.category.name }}
+                        </td>
+                        <td>
+                            {{ product.subcategory.name }}
+                        </td>
+                        <td>
+                            {{ product.name }}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="btnEdit(product.id)"
+                                ></button>
+                                <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-trash"
+                                    class="p-button-rounded p-button-warning"
+                                    (click)="btnDelete(product.id)"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8">No products found.</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="8">Loading products data. Please wait.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <p-paginator
+                (onPageChange)="onPageChange($event)"
+                [first]="first"
+                [rows]="rows"
+                [totalRecords]="totalRecords"
+                [rowsPerPageOptions]="[5, 10, 20, 40]"
+            />
         </div>
     </div>
 </div>
+
+<p-dialog
+    [(visible)]="productDialog"
+    [style]="{ width: '450px' }"
+    header="{{ titleDialog }}"
+    [modal]="true"
+    class="p-fluid"
+>
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="category">Kategori</label>
+            <p-dropdown
+                [(ngModel)]="product.categoryId"
+                [options]="categories"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Pilih Kategori"
+                autofocus
+                [ngClass]="{ 'ng-invalid ng-dirty': categoryIdValidation }"
+                (onChange)="onCategoryChange($event)"
+            >
+                <ng-template let-category pTemplate="product">
+                    {{ category.name }}
+                </ng-template>
+            </p-dropdown>
+            <small class="ng-dirty ng-invalid" *ngIf="categoryIdValidation">{{
+                categoryIdValidation
+            }}</small>
+        </div>
+        <div class="field">
+            <label for="subcategory">Sub Kategori</label>
+            <p-dropdown
+                [(ngModel)]="product.subcategoryId"
+                [options]="subcategories"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Pilih Sub Kategori"
+                autofocus
+                [ngClass]="{ 'ng-invalid ng-dirty': subcategoryIdValidation }"
+            >
+                <ng-template let-subcategory pTemplate="product">
+                    {{ subcategory.name }}
+                </ng-template>
+            </p-dropdown>
+            <small
+                class="ng-dirty ng-invalid"
+                *ngIf="subcategoryIdValidation"
+                >{{ subcategoryIdValidation }}</small
+            >
+        </div>
+        <div class="field">
+            <label for="name">Nama</label>
+            <input
+                type="text"
+                pInputText
+                id="name"
+                [(ngModel)]="product.name"
+                placeholder="Nama"
+                required
+                autofocus
+                [ngClass]="{ 'ng-invalid ng-dirty': nameValidation }"
+            />
+            <small class="ng-dirty ng-invalid" *ngIf="nameValidation">{{
+                nameValidation
+            }}</small>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="btnHideDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Save"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="btnSave()"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="deleteProductDialog"
+    header="Konfirmasi"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+>
+    <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span>Apakah anda yakin akan menghapusnya?</span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            icon="pi pi-times"
+            class="p-button-text"
+            label="No"
+            (click)="deleteProductDialog = false"
+        ></button>
+        <button
+            pButton
+            pRipple
+            icon="pi pi-check"
+            class="p-button-text"
+            label="Yes"
+            (click)="btnConfirmDelete()"
+        ></button>
+    </ng-template>
+</p-dialog>

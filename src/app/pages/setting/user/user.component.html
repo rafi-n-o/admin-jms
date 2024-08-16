@@ -51,8 +51,8 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="min-width: 12rem" pSortableColumn="nip">
-                            Nip <p-sortIcon field="nip"></p-sortIcon>
+                        <th style="min-width: 12rem" pSortableColumn="code">
+                            Kode <p-sortIcon field="code"></p-sortIcon>
                         </th>
                         <th style="min-width: 12rem" pSortableColumn="name">
                             Name <p-sortIcon field="name"></p-sortIcon>
@@ -66,19 +66,13 @@
                         >
                             Role <p-sortIcon field="role.name"></p-sortIcon>
                         </th>
-                        <th style="min-width: 12rem">
-                            <div
-                                class="flex justify-content-between align-items-center"
-                            >
-                                Aksi
-                            </div>
-                        </th>
+                        <th style="min-width: 12rem">Aksi</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-user>
                     <tr>
                         <td>
-                            {{ user.nip }}
+                            {{ user.code }}
                         </td>
                         <td>
                             {{ user.name }}
@@ -125,7 +119,7 @@
                 [first]="first"
                 [rows]="rows"
                 [totalRecords]="totalRecords"
-                [rowsPerPageOptions]="[5, 10, 20]"
+                [rowsPerPageOptions]="[5, 10, 20, 40]"
             />
         </div>
     </div>
@@ -140,19 +134,19 @@
 >
     <ng-template pTemplate="content">
         <div class="field">
-            <label for="nip">NIP</label>
+            <label for="code">Kode</label>
             <input
                 type="text"
                 pInputText
-                id="nip"
-                [(ngModel)]="user.nip"
-                placeholder="NIP"
+                id="code"
+                [(ngModel)]="user.code"
+                placeholder="Kode"
                 required
                 autofocus
-                [ngClass]="{ 'ng-invalid ng-dirty': nipValidation }"
+                [ngClass]="{ 'ng-invalid ng-dirty': codeValidation }"
             />
-            <small class="ng-dirty ng-invalid" *ngIf="nipValidation">{{
-                nipValidation
+            <small class="ng-dirty ng-invalid" *ngIf="codeValidation">{{
+                codeValidation
             }}</small>
         </div>
         <div class="field">

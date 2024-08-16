@@ -6,7 +6,7 @@ import { RoleService } from '../role/role.service';
 
 interface User {
     id?: number;
-    nip: string;
+    code: string;
     name: string;
     phone: string;
     roleId: number;
@@ -25,7 +25,7 @@ interface Role {
 }
 
 @Component({
-    templateUrl: './user.component.html'
+    templateUrl: './user.component.html',
 })
 export class UserComponent {
     loading: boolean;
@@ -35,10 +35,10 @@ export class UserComponent {
     search: string = '';
     rows: number = 5;
     first: number = 0;
-    currentPage: number;
+    currentPage: number = 1;
     roles: Role[] = [];
-    user: User = { nip: '', name: '', phone: '', roleId: null };
-    nipValidation: string;
+    user: User = { code: '', name: '', phone: '', roleId: null };
+    codeValidation: string;
     nameValidation: string;
     phoneValidation: string;
     roleIdValidation: string;
@@ -50,7 +50,10 @@ export class UserComponent {
 
     @ViewChild('filter') filter!: ElementRef;
 
-    constructor(private userService: UserService, private roleService: RoleService) { }
+    constructor(
+        private userService: UserService,
+        private roleService: RoleService
+    ) {}
 
     ngOnInit(): void {
         this.loadUsers('', this.rows, 1);
@@ -61,7 +64,7 @@ export class UserComponent {
         this.loadUsers(this.search, event.rows, event.page + 1);
         this.first = event.first;
         this.rows = event.rows;
-        this.currentPage = event.page + 1
+        this.currentPage = event.page + 1;
     }
 
     handleSearch(event: Event) {
@@ -80,13 +83,14 @@ export class UserComponent {
     }
 
     loadUsers(search: string, rows: number, page: number): void {
-        this.loading = true
-        this.userService.getUsers(search, rows, page)
-            .then(data => {
+        this.loading = true;
+        this.userService
+            .getUsers(search, rows, page)
+            .then((data) => {
                 this.users = data.data;
-                this.totalRecords = data.totalRecords
+                this.totalRecords = data.totalRecords;
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error(err);
                 if (err?.response?.data?.message) {
                     this.errorMessage = err.response.data.message;
@@ -96,19 +100,21 @@ export class UserComponent {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: this.errorMessage
+                    text: this.errorMessage,
                 });
-            }).finally(() => {
-                this.loading = false
+            })
+            .finally(() => {
+                this.loading = false;
             });
     }
 
     loadRoles(): void {
-        this.roleService.getRoles()
-            .then(data => {
+        this.roleService
+            .getRoles()
+            .then((data) => {
                 this.roles = data;
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error(err);
                 if (err?.response?.data?.message) {
                     this.errorMessage = err.response.data.message;
@@ -118,26 +124,28 @@ export class UserComponent {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: this.errorMessage
+                    text: this.errorMessage,
                 });
-            })
+            });
     }
 
     btnEdit(id: number) {
         this.userDialog = true;
-        this.titleDialog = "Ubah User"
+        this.titleDialog = 'Ubah User';
         this.id = id;
-        this.nipValidation = null;
+        this.codeValidation = null;
         this.nameValidation = null;
         this.phoneValidation = null;
         this.roleIdValidation = null;
-        this.userService.getUser(id)
-            .then(data => {
-                this.user.nip = data.nip;
+        this.userService
+            .getUser(id)
+            .then((data) => {
+                this.user.code = data.code;
                 this.user.name = data.name;
                 this.user.phone = data.phone;
                 this.user.roleId = data.role.id;
-            }).catch(err => {
+            })
+            .catch((err) => {
                 console.error(err);
                 if (err?.response?.data?.message) {
                     this.errorMessage = err.response.data.message;
@@ -147,28 +155,30 @@ export class UserComponent {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: this.errorMessage
+                    text: this.errorMessage,
                 });
-            })
+            });
     }
 
     btnDelete(id: number) {
-        this.id = id
+        this.id = id;
         this.deleteUserDialog = true;
     }
 
     btnConfirmDelete() {
         this.deleteUserDialog = false;
-        this.userService.deleteUser(this.id)
-            .then(data => {
+        this.userService
+            .deleteUser(this.id)
+            .then((data) => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil',
-                    text: 'Berhasil dihapus'
+                    text: 'Berhasil dihapus',
                 }).then(() => {
                     this.loadUsers(this.search, this.rows, this.currentPage);
-                })
-            }).catch(err => {
+                });
+            })
+            .catch((err) => {
                 console.error(err);
                 if (err?.response?.data?.message) {
                     this.errorMessage = err.response.data.message;
@@ -178,16 +188,16 @@ export class UserComponent {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: this.errorMessage
+                    text: this.errorMessage,
                 });
-            })
+            });
     }
 
     btnAdd() {
         this.userDialog = true;
-        this.titleDialog = "Tambah User";
-        this.user = { nip: '', name: '', phone: '', roleId: null };
-        this.nipValidation = null;
+        this.titleDialog = 'Tambah User';
+        this.user = { code: '', name: '', phone: '', roleId: null };
+        this.codeValidation = null;
         this.nameValidation = null;
         this.phoneValidation = null;
         this.roleIdValidation = null;
@@ -198,43 +208,47 @@ export class UserComponent {
     }
 
     btnSave() {
-        if (this.titleDialog === "Tambah User") {
-            this.userService.createUser(this.user)
-                .then(data => {
-                    this.userDialog = false
+        if (this.titleDialog === 'Tambah User') {
+            this.userService
+                .createUser(this.user)
+                .then((data) => {
+                    this.userDialog = false;
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
-                        text: 'Berhasil ditambahkan'
+                        text: 'Berhasil ditambahkan',
                     }).then(() => {
                         this.filter.nativeElement.value = '';
                         this.loadUsers('', 5, 1);
                         this.first = 0;
                         this.rows = 5;
                         this.search = '';
-                    })
-                }).catch(err => {
+                    });
+                })
+                .catch((err) => {
                     console.error(err);
                     if (Array.isArray(err.response.data.message)) {
-                        err.response.data.message.forEach((errorMsg: string) => {
-                            if (errorMsg.includes('nip')) {
-                                this.nipValidation = errorMsg;
+                        err.response.data.message.forEach(
+                            (errorMsg: string) => {
+                                if (errorMsg.includes('code')) {
+                                    this.codeValidation = errorMsg;
+                                }
+                                if (errorMsg.includes('name')) {
+                                    this.nameValidation = errorMsg;
+                                }
+                                if (errorMsg.includes('phone')) {
+                                    this.phoneValidation = errorMsg;
+                                }
+                                if (errorMsg.includes('role')) {
+                                    this.roleIdValidation = errorMsg;
+                                }
                             }
-                            if (errorMsg.includes('name')) {
-                                this.nameValidation = errorMsg;
-                            }
-                            if (errorMsg.includes('phone')) {
-                                this.phoneValidation = errorMsg;
-                            }
-                            if (errorMsg.includes('role')) {
-                                this.roleIdValidation = errorMsg;
-                            }
-                        });
+                        );
                     } else if (err?.response?.data?.message) {
-                        this.userDialog = false
+                        this.userDialog = false;
                         this.errorMessage = err.response.data.message;
                     } else {
-                        this.userDialog = false
+                        this.userDialog = false;
                         this.errorMessage = err.message;
                     }
 
@@ -242,47 +256,55 @@ export class UserComponent {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: this.errorMessage
+                            text: this.errorMessage,
                         }).then(() => {
-                            this.userDialog = true
-                        })
+                            this.userDialog = true;
+                        });
                     }
-                })
+                });
         }
 
-        if (this.titleDialog === "Ubah User") {
-            this.userService.updateUser(this.id, this.user)
-                .then(data => {
-                    this.userDialog = false
+        if (this.titleDialog === 'Ubah User') {
+            this.userService
+                .updateUser(this.id, this.user)
+                .then((data) => {
+                    this.userDialog = false;
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
-                        text: 'Berhasil diubah'
+                        text: 'Berhasil diubah',
                     }).then(() => {
-                        this.loadUsers(this.search, this.rows, this.currentPage);
-                    })
-                }).catch(err => {
+                        this.loadUsers(
+                            this.search,
+                            this.rows,
+                            this.currentPage
+                        );
+                    });
+                })
+                .catch((err) => {
                     console.error(err);
                     if (Array.isArray(err.response.data.message)) {
-                        err.response.data.message.forEach((errorMsg: string) => {
-                            if (errorMsg.includes('nip')) {
-                                this.nipValidation = errorMsg;
+                        err.response.data.message.forEach(
+                            (errorMsg: string) => {
+                                if (errorMsg.includes('code')) {
+                                    this.codeValidation = errorMsg;
+                                }
+                                if (errorMsg.includes('name')) {
+                                    this.nameValidation = errorMsg;
+                                }
+                                if (errorMsg.includes('phone')) {
+                                    this.phoneValidation = errorMsg;
+                                }
+                                if (errorMsg.includes('role')) {
+                                    this.roleIdValidation = errorMsg;
+                                }
                             }
-                            if (errorMsg.includes('name')) {
-                                this.nameValidation = errorMsg;
-                            }
-                            if (errorMsg.includes('phone')) {
-                                this.phoneValidation = errorMsg;
-                            }
-                            if (errorMsg.includes('role')) {
-                                this.roleIdValidation = errorMsg;
-                            }
-                        });
+                        );
                     } else if (err?.response?.data?.message) {
-                        this.userDialog = false
+                        this.userDialog = false;
                         this.errorMessage = err.response.data.message;
                     } else {
-                        this.userDialog = false
+                        this.userDialog = false;
                         this.errorMessage = err.message;
                     }
 
@@ -290,13 +312,12 @@ export class UserComponent {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: this.errorMessage
+                            text: this.errorMessage,
                         }).then(() => {
-                            this.userDialog = true
-                        })
+                            this.userDialog = true;
+                        });
                     }
-                })
+                });
         }
-
     }
 }

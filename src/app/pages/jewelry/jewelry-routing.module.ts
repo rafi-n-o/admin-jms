@@ -1,13 +1,30 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CategoryComponent } from './category/category.component';
-import { ProductComponent } from './product/product.component';
 
 @NgModule({
-    imports: [RouterModule.forChild([
-        { path: 'category', component: CategoryComponent },
-        { path: 'product', component: ProductComponent }
-    ])],
-    exports: [RouterModule]
+    imports: [
+        RouterModule.forChild([
+            {
+                path: 'category',
+                loadChildren: () =>
+                    import('./category/category.module').then(
+                        (m) => m.CategoryModule
+                    ),
+            },
+            {
+                path: 'product',
+                loadChildren: () =>
+                    import('./product/product.module').then(
+                        (m) => m.ProductModule
+                    ),
+            },
+            {
+                path: 'item',
+                loadChildren: () =>
+                    import('./item/item.module').then((m) => m.ItemModule),
+            },
+        ]),
+    ],
+    exports: [RouterModule],
 })
-export class JewelryRoutingModule { }
+export class JewelryRoutingModule {}

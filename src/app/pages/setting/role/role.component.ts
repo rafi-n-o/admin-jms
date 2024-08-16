@@ -9,27 +9,28 @@ interface Role {
 }
 
 @Component({
-    templateUrl: './role.component.html'
+    templateUrl: './role.component.html',
 })
 export class RoleComponent implements OnInit {
     loading: boolean = true;
     roles: Role[] = [];
-    errorMessage: string
+    errorMessage: string;
 
     @ViewChild('filter') filter!: ElementRef;
 
-    constructor(private roleService: RoleService) { }
+    constructor(private roleService: RoleService) {}
 
     ngOnInit(): void {
         this.loadRoles();
     }
 
     loadRoles(): void {
-        this.roleService.getRoles()
-            .then(data => {
+        this.roleService
+            .getRoles()
+            .then((data) => {
                 this.roles = data;
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error(err);
 
                 if (err?.response?.data?.message) {
@@ -41,15 +42,19 @@ export class RoleComponent implements OnInit {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: this.errorMessage
+                    text: this.errorMessage,
                 });
-            }).finally(() => {
-                this.loading = false
+            })
+            .finally(() => {
+                this.loading = false;
             });
     }
 
     onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+        table.filterGlobal(
+            (event.target as HTMLInputElement).value,
+            'contains'
+        );
     }
 
     clear(table: Table) {
