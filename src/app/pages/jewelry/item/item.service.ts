@@ -55,4 +55,19 @@ export class ItemService {
                 });
         });
     }
+
+    print(form: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            axios
+                .post(`${this.baseURL}/admin-items/print`, form, {
+                    responseType: 'blob',
+                })
+                .then((response) => {
+                    resolve(response.data);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
 }

@@ -267,6 +267,48 @@ export class ItemComponent {
 
     btnPrint() {
         const ids = this.selectedItems.map((item) => item.id);
-        console.log(ids);
+        const form = {
+            arr: ids,
+        };
+
+        this.itemsService
+            .print(form) // Menyertakan responseType: 'blob'
+            .then((data: Blob) => {
+                // Membuat URL dari Blob
+                const url = window.URL.createObjectURL(data);
+
+                // Membuat elemen anchor untuk mengunduh file
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'items.pdf'; // Nama file PDF yang diunduh
+                document.body.appendChild(a);
+                a.click();
+
+                // Membersihkan URL object
+                window.URL.revokeObjectURL(url);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Berhasil diunduh',
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+
+                if (err?.response?.data?.message) {
+                    this.errorMessage = err.response.data.message;
+                } else {
+                    this.errorMessage = err.message;
+                }
+
+                if (this.errorMessage.length) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: this.errorMessage,
+                    });
+                }
+            });
     }
 }
